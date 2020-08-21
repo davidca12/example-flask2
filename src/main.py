@@ -43,3 +43,49 @@ def handle_hello():
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)
+
+@app.route('/person/<int:person_id>', methods=['PUT', 'GET']) #siempre la app en minuscula.
+def get_single_person(person_id):
+    """
+    Single person
+    """
+    body = request.get_json() #{ 'username': 'new_username'}
+    if request.method == 'PUT':
+        user1 = Person.query.get(person_id)
+        user1.username = body.username
+        db.session.commit()
+        return jsonify(user1.serialize()), 200
+    if request.method == 'GET':
+        user1 = Person.query.get(person_id)
+        return jsonify(user1.serialize()), 200
+
+
+    return "Invalid Method", 404
+
+@app.route('/person/<int:person_id>', methods=['DELETE']) #siempre la app en minuscula.
+def delete_single_person(person_id):
+    """
+    Single person
+    """
+        user1 = Person.query.get(person_id)
+        if user1 is None:
+            raise APIException('User not found', status_code=404)
+        db.session.delete(user1)
+        db.session.commit()
+
+
+    return "Invalid Method", 404
+
+@app.route('/person/<int:person_id>', methods=['POST']) #siempre la app en minuscula.
+def post_single_person(person_id):
+    """
+    Single person
+    """
+        request_body_user=request.get_json()
+        user1 = Person(username=request_body_user['username'], email=request_body_user['email'])
+        db.session.add(user1)
+        db.session.commit()
+
+
+    return "Invalid Method", 404
+
